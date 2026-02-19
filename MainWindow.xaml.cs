@@ -69,6 +69,10 @@ namespace DopravniSit
             var nodes = network.GetAllNodes().OrderBy(n => n.Key).Select(n => n.Key).ToList();
             cbStart.ItemsSource = nodes;
             cbEnd.ItemsSource = nodes;
+
+            // Nově: naplnit ComboBoxy pro přidávání hran
+            if (cbEdgeSource != null) cbEdgeSource.ItemsSource = nodes;
+            if (cbEdgeTarget != null) cbEdgeTarget.ItemsSource = nodes;
         }
 
         // Naplní cbBlockedEdges seznamem všech (neorientovaných) hran
@@ -111,7 +115,8 @@ namespace DopravniSit
         }
 
         // Vykreslení grafu na Canvas
-        private void DrawGraph(List<string> highlightPath = null)
+        // Nově: lze zvýraznit uzel nebo hranu pomocí highlightNode / highlightEdge
+        private void DrawGraph(List<string> highlightPath = null, string highlightNode = null, (string, string)? highlightEdge = null)
         {
             graphCanvas.Children.Clear();
             var nodes = network.GetAllNodes();
@@ -152,7 +157,15 @@ namespace DopravniSit
                                 isSelected = true;
                         }
 
-                        // priority: blocked -> vydatně označeno; otherwise selected -> oranžová; otherwise path/normal
+                        bool isSearchHighlight = false;
+                        if (highlightEdge.HasValue)
+                        {
+                            var (hs, ht) = highlightEdge.Value;
+                            if ((hs == node.Key && ht == edge.TargetKey) || (hs == edge.TargetKey && ht == node.Key))
+                                isSearchHighlight = true;
+                        }
+
+                        // priority: blocked -> výrazné; otherwise search highlight -> zelená; otherwise selected -> oranžová; otherwise path/normal
                         Brush strokeBrush;
                         double thickness;
                         DoubleCollection dash = null;
@@ -162,6 +175,11 @@ namespace DopravniSit
                             strokeBrush = Brushes.Red;
                             thickness = 2;
                             dash = new DoubleCollection() { 2 };
+                        }
+                        else if (isSearchHighlight)
+                        {
+                            strokeBrush = Brushes.Green;
+                            thickness = 4;
                         }
                         else if (isSelected)
                         {
@@ -204,14 +222,23 @@ namespace DopravniSit
             // 2. Vykreslit uzly
             foreach (var node in nodes)
             {
-                Ellipse el = new Ellipse { Width = 10, Height = 10, Stroke = Brushes.Black, StrokeThickness = 1 };
-                Canvas.SetLeft(el, node.Data.X - 5);
-                Canvas.SetTop(el, node.Data.Y - 5);
+                bool isHighlighted = highlightNode != null && node.Key == highlightNode;
+
+                Ellipse el = new Ellipse
+                {
+                    Width = isHighlighted ? 16 : 10,
+                    Height = isHighlighted ? 16 : 10,
+                    Stroke = Brushes.Black,
+                    StrokeThickness = isHighlighted ? 2 : 1,
+                    Fill = isHighlighted ? Brushes.Yellow : Brushes.Transparent
+                };
+                Canvas.SetLeft(el, node.Data.X - (el.Width / 2));
+                Canvas.SetTop(el, node.Data.Y - (el.Height / 2));
                 graphCanvas.Children.Add(el);
 
                 TextBlock txt = new TextBlock { Text = node.Key, Foreground = Brushes.Black, FontWeight = FontWeights.Bold };
-                Canvas.SetLeft(txt, node.Data.X - 15);
-                Canvas.SetTop(txt, node.Data.Y - 10);
+                Canvas.SetLeft(txt, node.Data.X - 10);
+                Canvas.SetTop(txt, node.Data.Y - 20);
                 graphCanvas.Children.Add(txt);
             }
         }
@@ -275,6 +302,41 @@ namespace DopravniSit
             }
         }
 
+        // Odebrání hrany z grafu (volané tlačítkem)
+        private void BtnRemoveEdge_Click(object sender, RoutedEventArgs e)
+        {
+            (string, string)? pair = null;
+
+            // Preferujeme právě vybranou hranu kliknutím na canvas
+            if (selectedEdge.HasValue)
+                pair = selectedEdge.Value;
+            else if (cbBlockedEdges.SelectedItem is ComboBoxItem item && item.Tag is ValueTuple<string, string> tag)
+                pair = tag;
+            else
+            {
+                MessageBox.Show("Vyberte hranu kliknutím do mapy nebo v seznamu hran.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var (s, t) = pair.Value;
+
+            // Odebereme hranu z modelu grafu
+            network.RemoveEdge(s, t);
+
+            // Odebereme případné blokace spojené s touto hranou
+            blockedEdges.Remove((s, t));
+            blockedEdges.Remove((t, s));
+
+            // Zrušíme výběr pokud byly vybrány
+            if (selectedEdge.HasValue && (selectedEdge.Value == (s, t) || selectedEdge.Value == (t, s)))
+                selectedEdge = null;
+
+            // Aktualizovat GUI
+            PopulateCombos();
+            PopulateBlockedEdgesCombo();
+            DrawGraph();
+        }
+
         private void BtnReset_Click(object sender, RoutedEventArgs e)
         {
             blockedEdges.Clear();
@@ -285,8 +347,17 @@ namespace DopravniSit
 
         private void Canvas_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            // Najdi nejbližší hranu k bodu kliknutí (prahová vzdálenost)
+            // Získat pozici kliknutí na canvas
             var pos = e.GetPosition(graphCanvas);
+
+            // --- Nově: doplnit souřadnice do GUI pro přidání uzlu ---
+            // Používáme invariantní formát, aby parsing v BtnAddNode_Click fungoval se stejným formátem
+            tbNewX.Text = pos.X.ToString(CultureInfo.InvariantCulture);
+            tbNewY.Text = pos.Y.ToString(CultureInfo.InvariantCulture);
+            // (Volitelně) přesun focusu do klíče uzlu, aby uživatel mohl ihned zadat jméno
+            tbNewKey.Focus();
+
+            // Najdi nejbližší hranu k bodu kliknutí (prahová vzdálenost)
             double bestDist = double.MaxValue;
             (string, string)? bestEdge = null;
 
@@ -414,6 +485,227 @@ namespace DopravniSit
             tbNewKey.Text = "";
             tbNewX.Text = "";
             tbNewY.Text = "";
+        }
+
+        // --- Nová metoda: přidání hrany z GUI ---
+        private void BtnAddEdge_Click(object sender, RoutedEventArgs e)
+        {
+            if (cbEdgeSource.SelectedItem == null || cbEdgeTarget.SelectedItem == null)
+            {
+                MessageBox.Show("Vyberte zdroj a cílový uzel.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string source = cbEdgeSource.SelectedItem.ToString();
+            string target = cbEdgeTarget.SelectedItem.ToString();
+
+            if (source == target)
+            {
+                MessageBox.Show("Zdroj a cíl nesmí být stejné.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string edgeName = tbEdgeName.Text?.Trim();
+            if (string.IsNullOrEmpty(edgeName))
+            {
+                MessageBox.Show("Zadejte název hrany.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!double.TryParse(tbEdgeWeight.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out double weight))
+            {
+                MessageBox.Show("Váha musí být číslo (např. 5 nebo 3.5).", "Chyba", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Přidání hrany do sítě (RoadNetwork implementuje neorientovaný přístup)
+            try
+            {
+                network.AddEdge(source, target, edgeName, weight);
+            }
+            catch
+            {
+                MessageBox.Show("Při přidávání hrany došlo k chybě.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // Aktualizovat GUI
+            PopulateCombos();
+            PopulateBlockedEdgesCombo();
+            DrawGraph();
+
+            // Vyčistit vstupy
+            tbEdgeName.Text = "";
+            tbEdgeWeight.Text = "";
+            cbEdgeSource.SelectedItem = null;
+            cbEdgeTarget.SelectedItem = null;
+        }
+
+        // --- Nové: vyhledávání uzlu ---
+        private void BtnSearchNode_Click(object sender, RoutedEventArgs e)
+        {
+            string key = tbSearchNode.Text?.Trim();
+            if (string.IsNullOrEmpty(key))
+            {
+                MessageBox.Show("Zadejte klíč uzlu pro vyhledání.", "Informace", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var node = network.GetNode(key);
+            if (node == null)
+            {
+                MessageBox.Show($"Uzel '{key}' nebyl nalezen.", "Výsledek vyhledávání", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            // Vybereme v comboboxech a zvýrazníme na mapě
+            if (cbStart.ItemsSource != null && cbStart.Items.Contains(key)) cbStart.SelectedItem = key;
+            DrawGraph(null, key, null);
+        }
+
+        // --- Nové: vyhledávání hrany ---
+        private void BtnSearchEdge_Click(object sender, RoutedEventArgs e)
+        {
+            string query = tbSearchEdge.Text?.Trim();
+            if (string.IsNullOrEmpty(query))
+            {
+                MessageBox.Show("Zadejte název hrany nebo formát zdroj-cíl (např. a-b).", "Informace", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            // Pokud je zadáno ve formátu "s-t", zkusíme přímo podle konců
+            if (query.Contains("-"))
+            {
+                var parts = query.Split('-').Select(p => p.Trim()).ToArray();
+                if (parts.Length == 2)
+                {
+                    var s = parts[0];
+                    var t = parts[1];
+                    var sNode = network.GetNode(s);
+                    if (sNode != null && sNode.Edges.Any(e => e.TargetKey.Equals(t)))
+                    {
+                        DrawGraph(null, null, (s, t));
+                        MessageBox.Show($"Hrana {s} - {t} nalezena a zvýrazněna.", "Výsledek vyhledávání", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                    }
+                }
+            }
+
+            // Jinak hledáme podle názvu hrany (edge.Data)
+            foreach (var n in network.GetAllNodes())
+            {
+                foreach (var edge in n.Edges)
+                {
+                    if (edge.Data != null && edge.Data.ToString().Equals(query, System.StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        DrawGraph(null, null, (n.Key, edge.TargetKey));
+                        MessageBox.Show($"Hrana '{query}' nalezena mezi {n.Key} - {edge.TargetKey}. Hodnota je: {edge.Weight.ToString()}", "Výsledek vyhledávání", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                    }
+                }
+            }
+
+            MessageBox.Show("Hrana nenalezena.", "Výsledek vyhledávání", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        // --- Nové: načíst vybranou hranu do polí pro editaci ---
+        private void BtnLoadSelectedEdge_Click(object sender, RoutedEventArgs e)
+        {
+            (string, string)? pair = null;
+
+            if (selectedEdge.HasValue)
+                pair = selectedEdge.Value;
+            else if (cbBlockedEdges.SelectedItem is ComboBoxItem item && item.Tag is ValueTuple<string, string> tag)
+                pair = tag;
+
+            if (!pair.HasValue)
+            {
+                MessageBox.Show("Vyberte hranu kliknutím do mapy nebo v seznamu hran.", "Informace", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var (s, t) = pair.Value;
+            var sNode = network.GetNode(s);
+            if (sNode == null)
+            {
+                MessageBox.Show("Zdrojový uzel nenalezen.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var edge = sNode.Edges.FirstOrDefault(e => e.TargetKey.Equals(t));
+            if (edge == null)
+            {
+                MessageBox.Show("Hrana nenalezena v modelu.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // Naplnit editovací políčka
+            tbEditSource.Text = s;
+            tbEditTarget.Text = t;
+            tbEditEdgeName.Text = edge.Data?.ToString() ?? "";
+            tbEditEdgeWeight.Text = edge.Weight.ToString(CultureInfo.InvariantCulture);
+            tbEditEdgeName.Focus();
+        }
+
+        // --- Nové: aplikovat úpravy na hranu ---
+        private void BtnEditEdge_Click(object sender, RoutedEventArgs e)
+        {
+            string s = tbEditSource.Text?.Trim();
+            string t = tbEditTarget.Text?.Trim();
+
+            if (string.IsNullOrEmpty(s) || string.IsNullOrEmpty(t))
+            {
+                MessageBox.Show("Nejdříve načtěte vybranou hranu pomocí 'Načíst vybranou'.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var sNode = network.GetNode(s);
+            var tNode = network.GetNode(t);
+            if (sNode == null || tNode == null)
+            {
+                MessageBox.Show("Uzly hrany nebyly nalezeny v grafu.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            string newName = tbEditEdgeName.Text?.Trim();
+            if (string.IsNullOrEmpty(newName))
+            {
+                MessageBox.Show("Název hrany nemůže být prázdný.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!double.TryParse(tbEditEdgeWeight.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out double newWeight))
+            {
+                MessageBox.Show("Váha musí být číslo (např. 5 nebo 3.5).", "Chyba", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Najdeme a upravíme obě orientace hrany
+            var e1 = sNode.Edges.FirstOrDefault(ed => ed.TargetKey.Equals(t));
+            var e2 = tNode.Edges.FirstOrDefault(ed => ed.TargetKey.Equals(s));
+
+            if (e1 == null || e2 == null)
+            {
+                MessageBox.Show("Hrana nebyla nalezena v obou směrech.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            e1.Data = newName;
+            e1.Weight = newWeight;
+            e2.Data = newName;
+            e2.Weight = newWeight;
+
+            // Aktualizovat GUI a vyčistit editovací pole
+            PopulateCombos();
+            PopulateBlockedEdgesCombo();
+            DrawGraph();
+
+            tbEditSource.Text = "";
+            tbEditTarget.Text = "";
+            tbEditEdgeName.Text = "";
+            tbEditEdgeWeight.Text = "";
+
+            MessageBox.Show("Hrana byla upravena.", "Hotovo", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

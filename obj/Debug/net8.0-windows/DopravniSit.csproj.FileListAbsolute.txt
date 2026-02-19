@@ -17,3 +17,4 @@ C:\Skola\Ing\2.Semestr\NNDSA\SemA\DopravniSit\obj\Debug\net8.0-windows\refint\Do
 C:\Skola\Ing\2.Semestr\NNDSA\SemA\DopravniSit\obj\Debug\net8.0-windows\DopravniSit.pdb
 C:\Skola\Ing\2.Semestr\NNDSA\SemA\DopravniSit\obj\Debug\net8.0-windows\DopravniSit.genruntimeconfig.cache
 C:\Skola\Ing\2.Semestr\NNDSA\SemA\DopravniSit\obj\Debug\net8.0-windows\ref\DopravniSit.dll
+C:\Skola\Ing\2.Semestr\NNDSA\SemA\DopravniSit\obj\Debug\net8.0-windows\DopravniSit.sourcelink.json

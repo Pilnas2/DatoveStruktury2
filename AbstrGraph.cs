@@ -40,6 +40,19 @@ namespace DopravniSit
             }
         }
 
+        // Nově: odebrání hrany (neorientovaně) - smaže obě orientace
+        public void RemoveEdge(K sourceKey, K targetKey)
+        {
+            var sourceNode = NodesBST.Find(sourceKey);
+            var targetNode = NodesBST.Find(targetKey);
+
+            if (sourceNode == null || targetNode == null) return;
+
+            // Odebereme všechny hrany vedoucí na cílový klíč
+            sourceNode.Edges.RemoveAll(e => e.TargetKey.CompareTo(targetKey) == 0);
+            targetNode.Edges.RemoveAll(e => e.TargetKey.CompareTo(sourceKey) == 0);
+        }
+
         // Oprava: V metodě GetNode upravte návratový typ na Node<K, V, E, W>
         public Node<K, V, E, W> GetNode(K key) => NodesBST.Find(key);
 
