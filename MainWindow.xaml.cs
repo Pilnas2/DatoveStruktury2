@@ -1,12 +1,13 @@
-﻿using System.Windows;
+﻿using Microsoft.Win32;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Microsoft.Win32;
-using System.IO;
-using System.Linq;
-using System.Collections.Generic;
-using System.Globalization;
 
 namespace DopravniSit
 {
@@ -108,10 +109,31 @@ namespace DopravniSit
             }
         }
 
-        private void DrawGraph(List<string> highlightPath = null, string highlightNode = null, (string, string)? highlightEdge = null)
+        private void DrawGraph(List<string> highlightPath = null, string highlightNode = null, (string, string)? highlightEdge = null, List<List<string>> multiPaths = null)
         {
             graphCanvas.Children.Clear();
             var nodes = network.GetAllNodes();
+
+            // připravit mapu hran -> index cesty (pokud multiPaths != null)
+            Dictionary<(string, string), int> edgeToPathIndex = new();
+            if (multiPaths != null)
+            {
+                for (int pi = 0; pi < multiPaths.Count; pi++)
+                {
+                    var p = multiPaths[pi];
+                    for (int i = 0; i < p.Count - 1; i++)
+                    {
+                        var a = p[i];
+                        var b = p[i + 1];
+                        // normalizovat pořadí, protože vykreslování probíhá jen pro string.Compare(node.Key, edge.TargetKey) < 0
+                        var key = string.Compare(a, b) < 0 ? (a, b) : (b, a);
+                        if (!edgeToPathIndex.ContainsKey(key))
+                            edgeToPathIndex[key] = pi;
+                    }
+                }
+            }
+
+            Brush[] altBrushes = new Brush[] { Brushes.Blue, Brushes.Green, Brushes.Purple, Brushes.Orange, Brushes.Brown };
 
             // 1. Vykreslit hrany
             foreach (var node in nodes)
@@ -175,15 +197,25 @@ namespace DopravniSit
                             strokeBrush = Brushes.Orange;
                             thickness = 4;
                         }
-                        else if (isPath)
-                        {
-                            strokeBrush = Brushes.Blue;
-                            thickness = 3;
-                        }
                         else
                         {
-                            strokeBrush = Brushes.Gray;
-                            thickness = 1;
+                            // multiPaths přednost před běžným isPath
+                            var normKey = string.Compare(node.Key, edge.TargetKey) < 0 ? (node.Key, edge.TargetKey) : (edge.TargetKey, node.Key);
+                            if (edgeToPathIndex.TryGetValue(normKey, out int pathIndex))
+                            {
+                                strokeBrush = altBrushes[pathIndex % altBrushes.Length];
+                                thickness = 3;
+                            }
+                            else if (isPath)
+                            {
+                                strokeBrush = Brushes.Blue;
+                                thickness = 3;
+                            }
+                            else
+                            {
+                                strokeBrush = Brushes.Gray;
+                                thickness = 1;
+                            }
                         }
 
                         Line line = new Line
@@ -650,6 +682,71 @@ namespace DopravniSit
             tbEditEdgeWeight.Text = "";
 
             MessageBox.Show("Hrana byla upravena.", "Hotovo", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void BtnAlternatives_Click(object sender, RoutedEventArgs e)
+        {
+            // Načíst cesta ze vstupu
+            if (cbStart.SelectedItem == null || cbEnd.SelectedItem == null) return;
+            string start = cbStart.SelectedItem.ToString();
+            string end = cbEnd.SelectedItem.ToString();
+
+            // Najít alternativy pomocí GetAlternativePaths
+            List<double> lengths;
+            var paths = network.GetAlternativePaths(start, end, blockedEdges, out lengths);
+
+            // Zobrazit výsledky — každá položka: [cesta..........................][váha]
+            lbAlternatives.Items.Clear();
+            for (int i = 0; i < paths.Count; i++)
+            {
+                var path = paths[i];
+                string pathText = string.Join(" -> ", path);
+                string lengthStr = (lengths != null && i < lengths.Count) ? "Váha:" + lengths[i].ToString(CultureInfo.InvariantCulture) : "N/A";
+
+                var grid = new Grid();
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+                var tbPath = new TextBlock { Text = pathText, TextTrimming = TextTrimming.CharacterEllipsis };
+                Grid.SetColumn(tbPath, 0);
+                grid.Children.Add(tbPath);
+
+                var tbLen = new TextBlock { Text = lengthStr, Margin = new Thickness(8, 0, 0, 0), HorizontalAlignment = HorizontalAlignment.Right };
+                Grid.SetColumn(tbLen, 1);
+                grid.Children.Add(tbLen);
+
+                var item = new ListBoxItem { Content = grid, Tag = (lengths != null && i < lengths.Count) ? (object)lengths[i] : null };
+                lbAlternatives.Items.Add(item);
+            }
+
+            if (paths.Count > 0)
+                MessageBox.Show($"Nalezeno {paths.Count} alternativních cest.", "Výsledek", MessageBoxButton.OK, MessageBoxImage.Information);
+            else
+                MessageBox.Show("Nebyla nalezena žádná alternativa.", "Výsledek", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void LbAlternatives_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lbAlternatives.SelectedItem == null) return;
+
+            if (lbAlternatives.SelectedItem is ListBoxItem sel)
+            {
+                string selectedPathText = "";
+
+                if (sel.Content is Grid g && g.Children.Count > 0 && g.Children[0] is TextBlock tb)
+                    selectedPathText = tb.Text;
+                else
+                    selectedPathText = sel.Content?.ToString() ?? "";
+
+                var nodes = selectedPathText.Split(new[] { " -> " }, StringSplitOptions.RemoveEmptyEntries);
+
+                List<string> path = new List<string>();
+                foreach (var node in nodes)
+                    path.Add(node.Trim());
+
+                // Zvýraznit cestu na grafu
+                DrawGraph(path);
+            }
         }
     }
 }

@@ -9,103 +9,113 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0" Margin="10,10,10,10" Background="LightGray" Grid.ColumnSpan="2">
-            <Label Content="Start:" FontWeight="Bold"/>
-            <ComboBox x:Name="cbStart"/>
+        <ScrollViewer Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Background="LightGray" CanContentScroll="True">
+            <StackPanel Margin="6">
+                <Label Content="Start:" FontWeight="Bold"/>
+                <ComboBox x:Name="cbStart"/>
 
-            <Label Content="Cíl:" FontWeight="Bold"/>
-            <ComboBox x:Name="cbEnd"/>
+                <Label Content="Cíl:" FontWeight="Bold"/>
+                <ComboBox x:Name="cbEnd"/>
 
-            <Button Content="Vypočítat nejkratší trasu" Margin="0,10" Click="BtnCalc_Click"/>
+                <Button Content="Vypočítat nejkratší trasu" Margin="0,10" Click="BtnCalc_Click"/>
+                <Separator/>
+                <StackPanel Orientation="Horizontal" Margin="6" HorizontalAlignment="Left">
+                    <Button x:Name="btnAlternatives" Content="Najít alternativy" Margin="6,0,0,0" Click="BtnAlternatives_Click" />
+                </StackPanel>
+                <ListBox HorizontalAlignment="Left" x:Name="lbAlternatives" Width="300" Height="90
+         " Margin="6,0,0,0" SelectionChanged="LbAlternatives_SelectionChanged" />
 
-            <Separator/>
-            <Label Content="Vyhledávání" FontWeight="Bold"/>
-            <StackPanel Orientation="Horizontal" Margin="0,4,0,4">
-                <Label Content="Uzel:" Width="40" VerticalAlignment="Center"/>
-                <TextBox x:Name="tbSearchNode" Width="100" Margin="0,0,6,0"/>
-                <Button Content="Najít" Click="BtnSearchNode_Click" Width="50"/>
+                <Separator/>
+                <Label Content="Vyhledávání" FontWeight="Bold"/>
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,4">
+                    <Label Content="Uzel:" Width="40" VerticalAlignment="Center"/>
+                    <TextBox x:Name="tbSearchNode" Width="100" Margin="0,0,6,0"/>
+                    <Button Content="Najít" Click="BtnSearchNode_Click" Width="50"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,4">
+                    <Label Content="Hrana:" Width="40" VerticalAlignment="Center"/>
+                    <TextBox x:Name="tbSearchEdge" Width="120" Margin="0,0,6,0" ToolTip="Zadejte název hrany nebo formát zdroj-cíl (např. a-b)"/>
+                    <Button Content="Najít" Click="BtnSearchEdge_Click" Width="50"/>
+                </StackPanel>
+
+                <Separator/>
+                <Label Content="Problémová komunikace (blokovat):" FontWeight="Bold"/>
+                <Label Content="(Vyberte kliknutím v mapě nebo zde)" FontSize="10"/>
+                <ComboBox x:Name="cbBlockedEdges"/>
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                    <Button Content="Přidat k blokovaným" Click="BtnBlock_Click" Margin="0,0,6,0"/>
+                    <Button Content="Odebrat hranu" Click="BtnRemoveEdge_Click" Margin="0,0,6,0"/>
+                    <Button Content="Reset blokací" Click="BtnReset_Click"/>
+                </StackPanel>
+
+                <Separator/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,5,0,5">
+                    <Button Content="Uložit do souboru..." Width="120" Click="BtnSave_Click" Margin="0,0,5,0"/>
+                    <Button Content="Načíst ze souboru..." Width="120" Click="BtnLoad_Click"/>
+                </StackPanel>
+
+                <Separator/>
+                <Label Content="Přidat uzel" FontWeight="Bold"/>
+                <StackPanel Orientation="Vertical" Margin="0,5,0,5">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Label Content="Klíč:" Width="40"/>
+                        <TextBox x:Name="tbNewKey" Width="120"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0" VerticalAlignment="Center">
+                        <Label Content="X:" Width="40"/>
+                        <TextBox x:Name="tbNewX" Width="70"/>
+                        <Label Content="Y:" Width="30" Margin="10,0,0,0"/>
+                        <TextBox x:Name="tbNewY" Width="70"/>
+                    </StackPanel>
+                    <Button Content="Přidat uzel" Width="120" Margin="0,6,0,0" Click="BtnAddNode_Click"/>
+                </StackPanel>
+
+                <Separator/>
+                <Label Content="Přidat hranu" FontWeight="Bold"/>
+                <StackPanel Orientation="Vertical" Margin="0,5,0,5">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,0,2">
+                        <Label Content="Ze:" Width="30"/>
+                        <ComboBox x:Name="cbEdgeSource" Width="80"/>
+                        <Label Content="Do:" Width="30" Margin="6,0,0,0"/>
+                        <ComboBox x:Name="cbEdgeTarget" Width="80"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,0,2">
+                        <Label Content="Název:" Width="50"/>
+                        <TextBox x:Name="tbEdgeName" Width="120"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,0,2">
+                        <Label Content="Váha:" Width="50"/>
+                        <TextBox x:Name="tbEdgeWeight" Width="70"/>
+                    </StackPanel>
+                    <Button Content="Přidat hranu" Width="120" Margin="0,6,0,0" Click="BtnAddEdge_Click"/>
+                </StackPanel>
+
+                <Separator/>
+                <Label Content="Upravit vybranou hranu" FontWeight="Bold"/>
+                <StackPanel Orientation="Vertical" Margin="0,5,0,5">
+                    <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                        <Label Content="Ze:" Width="30"/>
+                        <TextBox x:Name="tbEditSource" Width="60" IsReadOnly="True"/>
+                        <Label Content="Do:" Width="30" Margin="6,0,0,0"/>
+                        <TextBox x:Name="tbEditTarget" Width="60" IsReadOnly="True"/>
+                        <Button Content="Načíst vybranou" Click="BtnLoadSelectedEdge_Click" Margin="6,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                        <Label Content="Název:" Width="50"/>
+                        <TextBox x:Name="tbEditEdgeName" Width="120"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                        <Label Content="Váha:" Width="50"/>
+                        <TextBox x:Name="tbEditEdgeWeight" Width="70"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <Button Content="Upravit hranu" Width="120" Click="BtnEditEdge_Click"/>
+                    </StackPanel>
+                </StackPanel>
+
+
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,4,0,4">
-                <Label Content="Hrana:" Width="40" VerticalAlignment="Center"/>
-                <TextBox x:Name="tbSearchEdge" Width="120" Margin="0,0,6,0" ToolTip="Zadejte název hrany nebo formát zdroj-cíl (např. a-b)"/>
-                <Button Content="Najít" Click="BtnSearchEdge_Click" Width="50"/>
-            </StackPanel>
-
-            <Separator/>
-            <Label Content="Problémová komunikace (blokovat):" FontWeight="Bold"/>
-            <Label Content="(Vyberte kliknutím v mapě nebo zde)" FontSize="10"/>
-            <ComboBox x:Name="cbBlockedEdges"/>
-            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                <Button Content="Přidat k blokovaným" Click="BtnBlock_Click" Margin="0,0,6,0"/>
-                <Button Content="Odebrat hranu" Click="BtnRemoveEdge_Click" Margin="0,0,6,0"/>
-                <Button Content="Reset blokací" Click="BtnReset_Click"/>
-            </StackPanel>
-
-            <Separator/>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,5,0,5">
-                <Button Content="Uložit do souboru..." Width="120" Click="BtnSave_Click" Margin="0,0,5,0"/>
-                <Button Content="Načíst ze souboru..." Width="120" Click="BtnLoad_Click"/>
-            </StackPanel>
-
-            <Separator/>
-            <Label Content="Přidat uzel" FontWeight="Bold"/>
-            <StackPanel Orientation="Vertical" Margin="0,5,0,5">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Label Content="Klíč:" Width="40"/>
-                    <TextBox x:Name="tbNewKey" Width="120"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,5,0,0" VerticalAlignment="Center">
-                    <Label Content="X:" Width="40"/>
-                    <TextBox x:Name="tbNewX" Width="70"/>
-                    <Label Content="Y:" Width="30" Margin="10,0,0,0"/>
-                    <TextBox x:Name="tbNewY" Width="70"/>
-                </StackPanel>
-                <Button Content="Přidat uzel" Width="120" Margin="0,6,0,0" Click="BtnAddNode_Click"/>
-            </StackPanel>
-
-            <Separator/>
-            <Label Content="Přidat hranu" FontWeight="Bold"/>
-            <StackPanel Orientation="Vertical" Margin="0,5,0,5">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,0,2">
-                    <Label Content="Ze:" Width="30"/>
-                    <ComboBox x:Name="cbEdgeSource" Width="80"/>
-                    <Label Content="Do:" Width="30" Margin="6,0,0,0"/>
-                    <ComboBox x:Name="cbEdgeTarget" Width="80"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,0,2">
-                    <Label Content="Název:" Width="50"/>
-                    <TextBox x:Name="tbEdgeName" Width="120"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,0,2">
-                    <Label Content="Váha:" Width="50"/>
-                    <TextBox x:Name="tbEdgeWeight" Width="70"/>
-                </StackPanel>
-                <Button Content="Přidat hranu" Width="120" Margin="0,6,0,0" Click="BtnAddEdge_Click"/>
-            </StackPanel>
-
-            <Separator/>
-            <Label Content="Upravit vybranou hranu" FontWeight="Bold"/>
-            <StackPanel Orientation="Vertical" Margin="0,5,0,5">
-                <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
-                    <Label Content="Ze:" Width="30"/>
-                    <TextBox x:Name="tbEditSource" Width="60" IsReadOnly="True"/>
-                    <Label Content="Do:" Width="30" Margin="6,0,0,0"/>
-                    <TextBox x:Name="tbEditTarget" Width="60" IsReadOnly="True"/>
-                    <Button Content="Načíst vybranou" Click="BtnLoadSelectedEdge_Click" Margin="6,0,0,0"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
-                    <Label Content="Název:" Width="50"/>
-                    <TextBox x:Name="tbEditEdgeName" Width="120"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
-                    <Label Content="Váha:" Width="50"/>
-                    <TextBox x:Name="tbEditEdgeWeight" Width="70"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <Button Content="Upravit hranu" Width="120" Click="BtnEditEdge_Click"/>
-                </StackPanel>
-            </StackPanel>
-        </StackPanel>
+        </ScrollViewer>
 
         <Canvas x:Name="graphCanvas" Grid.Column="2" Background="White" MouseLeftButtonDown="Canvas_Click"/>
     </Grid>

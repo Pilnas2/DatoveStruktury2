@@ -4,11 +4,10 @@ using System.Linq;
 
 namespace DopravniSit
 {
-    // Generické typy:
-    // K: Klíč uzlu (např. string "z") [cite: 63]
-    // V: Data uzlu (např. souřadnice Point) [cite: 63]
+    // K: Klíč uzlu (např. string "z")
+    // V: Data uzlu (např. souřadnice Point)
     // E: Data hrany (např. název silnice)
-    // W: Váha hrany (např. double čas) [cite: 64]
+    // W: Váha hrany (např. double čas)
     public abstract class AbstrGraph<K, V, E, W> where K : IComparable<K> where W : IComparable<W>
     {
         // Oprava: V AbstrGraph změňte typ uzlů v BST na Node<K, V, E, W>
@@ -113,7 +112,9 @@ namespace DopravniSit
     {
         public K Key { get; set; }
         public V Data { get; set; }
-        public List<Edge<K, E, W>> Edges { get; set; } = new();
+        public List<Edge<K, E, W>>
+            Edges
+        { get; set; } = new();
 
         public Node(K key, V data) { Key = key; Data = data; }
     }

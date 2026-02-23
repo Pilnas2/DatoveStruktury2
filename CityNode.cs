@@ -137,5 +137,81 @@ namespace DopravniSit
 
             return rn;
         }
+        public List<List<string>> GetAlternativePaths(string start, string end, HashSet<(string, string)> blockedEdges, out List<double> lengths)
+        {
+            lengths = new List<double>();
+            var results = new List<List<string>>();
+            if (string.IsNullOrEmpty(start) || string.IsNullOrEmpty(end))
+                return results;
+
+            // Pomocná funkce: sestaví cestu z mapy předchůdců
+            List<string> BuildPath(Dictionary<string, string> prev)
+            {
+                if (prev == null) return null;
+                var path = new List<string>();
+                string curr = end;
+                if (!curr.Equals(start) && !prev.ContainsKey(curr)) return null;
+                while (true)
+                {
+                    path.Add(curr);
+                    if (curr.Equals(start)) break;
+                    if (!prev.ContainsKey(curr)) return null;
+                    curr = prev[curr];
+                }
+                path.Reverse();
+                return path;
+            }
+
+            string PathKey(List<string> p) => string.Join(">", p);
+
+            // Kopie původních blokovaných hran (abychom je neměnili)
+            var baseBlocked = blockedEdges != null ? new HashSet<(string, string)>(blockedEdges) : new HashSet<(string, string)>();
+
+            // 1) Primární nejkratší cesta
+            var prev0 = Dijkstra(start, end, baseBlocked, out var dist0);
+            var first = BuildPath(prev0);
+            if (first == null) return results;
+
+            results.Add(first);
+            lengths.Add(dist0 != null && dist0.ContainsKey(end) ? dist0[end] : double.PositiveInfinity);
+            var seen = new HashSet<string> { PathKey(first) };
+
+            // Fronta pro rozvíjení nalezených cest (breadth-first)
+            var q = new Queue<List<string>>();
+            q.Enqueue(first);
+
+            while (q.Count > 0)
+            {
+                var current = q.Dequeue();
+
+                // Pro každou hranu v current: zkusíme ji dočasně zablokovat a najít novou cestu
+                for (int i = 0; i < current.Count - 1; i++)
+                {
+                    var a = current[i];
+                    var b = current[i + 1];
+
+                    // Lokální blokování = původní bloky + právě zablokovaná hrana obousměrně
+                    var localBlocked = new HashSet<(string, string)>(baseBlocked)
+                    {
+                        (a, b),
+                        (b, a)
+                    };
+
+                    var prev = Dijkstra(start, end, localBlocked, out var dists);
+                    var alt = BuildPath(prev);
+                    if (alt == null) continue;
+
+                    var key = PathKey(alt);
+                    if (seen.Contains(key)) continue;
+
+                    seen.Add(key);
+                    results.Add(alt);
+                    lengths.Add(dists != null && dists.ContainsKey(end) ? dists[end] : double.PositiveInfinity);
+                    q.Enqueue(alt);
+                }
+            }
+
+            return results;
+        }
     }
 }
