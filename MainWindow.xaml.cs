@@ -13,8 +13,8 @@ namespace DopravniSit
     public partial class MainWindow : Window
     {
         private RoadNetwork network = new RoadNetwork();
-        private HashSet<(string, string)> blockedEdges = new HashSet<(string, string)>(); // Množina neprůjezdných hran [cite: 67, 72]
-        private (string, string)? selectedEdge = null; // Aktuálně vybraná hrana kliknutím
+        private HashSet<(string, string)> blockedEdges = new HashSet<(string, string)>();
+        private (string, string)? selectedEdge = null;
 
         public MainWindow()
         {
@@ -27,7 +27,6 @@ namespace DopravniSit
 
         private void InitializeGraphData()
         {
-            // Příklad dat dle Obr. 1 v PDF [cite: 25] + doplnění do 20 uzlů
             network.AddNode("z", new Point(50, 50));
             network.AddNode("k", new Point(100, 80));
             network.AddNode("s", new Point(250, 80));
@@ -44,12 +43,11 @@ namespace DopravniSit
             network.AddNode("r", new Point(300, 400));
             network.AddNode("f", new Point(400, 420));
 
-            // Hrany a váhy (čas) [cite: 64]
             network.AddEdge("z", "k", "E1", 5);
             network.AddEdge("k", "s", "E2", 10);
             network.AddEdge("k", "a", "E3", 8);
             network.AddEdge("s", "i", "E4", 6);
-            network.AddEdge("s", "a", "E5", 12); // Příklad
+            network.AddEdge("s", "a", "E5", 12);
             network.AddEdge("a", "x", "E6", 4);
             network.AddEdge("i", "x", "E7", 7);
             network.AddEdge("x", "m", "E8", 9);
@@ -61,7 +59,6 @@ namespace DopravniSit
             network.AddEdge("t", "n", "E14", 4);
             network.AddEdge("n", "p", "E15", 6);
             network.AddEdge("p", "w", "E16", 5);
-            // ... další hrany pro splnění 30 hran[cite: 76]...
         }
 
         private void PopulateCombos()
@@ -75,7 +72,6 @@ namespace DopravniSit
             if (cbEdgeTarget != null) cbEdgeTarget.ItemsSource = nodes;
         }
 
-        // Naplní cbBlockedEdges seznamem všech (neorientovaných) hran
         private void PopulateBlockedEdgesCombo()
         {
             cbBlockedEdges.Items.Clear();
@@ -85,7 +81,6 @@ namespace DopravniSit
             {
                 foreach (var edge in node.Edges)
                 {
-                    // kreslíme / uvádíme každou hranu jen jednou (neorientovaný)
                     if (string.Compare(node.Key, edge.TargetKey) < 0)
                     {
                         bool isBlocked = blockedEdges.Contains((node.Key, edge.TargetKey)) ||
@@ -97,10 +92,9 @@ namespace DopravniSit
                         var item = new ComboBoxItem
                         {
                             Content = display,
-                            Tag = (node.Key, edge.TargetKey) // uložíme pár do Tagu
+                            Tag = (node.Key, edge.TargetKey)
                         };
 
-                        // Pokud je tato hrana aktuálně vybraná kliknutím, nastavíme selekci v ComboBoxu
                         if (selectedEdge.HasValue)
                         {
                             var (s, t) = selectedEdge.Value;
@@ -114,8 +108,6 @@ namespace DopravniSit
             }
         }
 
-        // Vykreslení grafu na Canvas
-        // Nově: lze zvýraznit uzel nebo hranu pomocí highlightNode / highlightEdge
         private void DrawGraph(List<string> highlightPath = null, string highlightNode = null, (string, string)? highlightEdge = null)
         {
             graphCanvas.Children.Clear();
@@ -126,7 +118,6 @@ namespace DopravniSit
             {
                 foreach (var edge in node.Edges)
                 {
-                    // Abychom nekreslili hranu dvakrát (neorientovaný), kreslíme jen když Key < TargetKey
                     if (string.Compare(node.Key, edge.TargetKey) < 0)
                     {
                         var targetNode = network.GetNode(edge.TargetKey);
@@ -138,7 +129,6 @@ namespace DopravniSit
                         bool isPath = false;
                         if (highlightPath != null)
                         {
-                            // Zjištění, zda je hrana součástí cesty
                             for (int i = 0; i < highlightPath.Count - 1; i++)
                             {
                                 if ((highlightPath[i] == node.Key && highlightPath[i + 1] == edge.TargetKey) ||
@@ -165,7 +155,6 @@ namespace DopravniSit
                                 isSearchHighlight = true;
                         }
 
-                        // priority: blocked -> výrazné; otherwise search highlight -> zelená; otherwise selected -> oranžová; otherwise path/normal
                         Brush strokeBrush;
                         double thickness;
                         DoubleCollection dash = null;
@@ -206,7 +195,7 @@ namespace DopravniSit
                             Stroke = strokeBrush,
                             StrokeThickness = thickness,
                             StrokeDashArray = dash,
-                            Tag = (node.Key, edge.TargetKey) // uložíme identitu hrany pro kliknutí
+                            Tag = (node.Key, edge.TargetKey)
                         };
                         graphCanvas.Children.Add(line);
 
@@ -219,7 +208,6 @@ namespace DopravniSit
                 }
             }
 
-            // 2. Vykreslit uzly
             foreach (var node in nodes)
             {
                 bool isHighlighted = highlightNode != null && node.Key == highlightNode;
@@ -243,39 +231,34 @@ namespace DopravniSit
             }
         }
 
-        // Tlačítko výpočtu
         private void BtnCalc_Click(object sender, RoutedEventArgs e)
         {
             if (cbStart.SelectedItem == null || cbEnd.SelectedItem == null) return;
             string start = cbStart.SelectedItem.ToString();
             string end = cbEnd.SelectedItem.ToString();
 
-            // Výpočet Dijkstry s ohledem na blokované hrany [cite: 65, 67]
             var predecessors = network.Dijkstra(start, end, blockedEdges, out var dists);
 
-            // Rekonstrukce cesty
             List<string> path = new List<string>();
             string curr = end;
 
-            // Pokud cesta existuje
             if (predecessors.ContainsKey(curr) || curr == start)
             {
                 while (curr != null)
                 {
                     path.Add(curr);
                     if (curr == start) break;
-                    if (!predecessors.ContainsKey(curr)) { path.Clear(); break; } // Nedosažitelné
+                    if (!predecessors.ContainsKey(curr)) { path.Clear(); break; }
                     curr = predecessors[curr];
                 }
                 path.Reverse();
             }
 
-            // Zobrazíme výsledek v dialogu (ListBox byl odstraněn)
             if (path.Count > 0)
             {
                 string length = dists != null && dists.ContainsKey(end) ? dists[end].ToString(CultureInfo.InvariantCulture) : "N/A";
                 MessageBox.Show("Cesta: " + string.Join(" -> ", path) + "\nCelková váha: " + length, "Výsledek", MessageBoxButton.OK, MessageBoxImage.Information);
-                DrawGraph(path); // Zvýraznění cesty
+                DrawGraph(path);
             }
             else
             {
@@ -284,7 +267,6 @@ namespace DopravniSit
             }
         }
 
-        // Přidání "problematické" hrany (alternativní trasy) [cite: 7, 72]
         private void BtnBlock_Click(object sender, RoutedEventArgs e)
         {
             if (cbBlockedEdges.SelectedItem == null) return;
@@ -292,22 +274,18 @@ namespace DopravniSit
             if (cbBlockedEdges.SelectedItem is ComboBoxItem item && item.Tag is ValueTuple<string, string> pair)
             {
                 var (s, t) = pair;
-                // Přidáme obě orientace, aby bylo hledání/označení jednoduché
                 blockedEdges.Add((s, t));
                 blockedEdges.Add((t, s));
 
-                // Aktualizovat seznam a překreslit graf
                 PopulateBlockedEdgesCombo();
                 DrawGraph();
             }
         }
 
-        // Odebrání hrany z grafu (volané tlačítkem)
         private void BtnRemoveEdge_Click(object sender, RoutedEventArgs e)
         {
             (string, string)? pair = null;
 
-            // Preferujeme právě vybranou hranu kliknutím na canvas
             if (selectedEdge.HasValue)
                 pair = selectedEdge.Value;
             else if (cbBlockedEdges.SelectedItem is ComboBoxItem item && item.Tag is ValueTuple<string, string> tag)
@@ -320,18 +298,14 @@ namespace DopravniSit
 
             var (s, t) = pair.Value;
 
-            // Odebereme hranu z modelu grafu
             network.RemoveEdge(s, t);
 
-            // Odebereme případné blokace spojené s touto hranou
             blockedEdges.Remove((s, t));
             blockedEdges.Remove((t, s));
 
-            // Zrušíme výběr pokud byly vybrány
             if (selectedEdge.HasValue && (selectedEdge.Value == (s, t) || selectedEdge.Value == (t, s)))
                 selectedEdge = null;
 
-            // Aktualizovat GUI
             PopulateCombos();
             PopulateBlockedEdgesCombo();
             DrawGraph();
@@ -347,17 +321,12 @@ namespace DopravniSit
 
         private void Canvas_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            // Získat pozici kliknutí na canvas
             var pos = e.GetPosition(graphCanvas);
 
-            // --- Nově: doplnit souřadnice do GUI pro přidání uzlu ---
-            // Používáme invariantní formát, aby parsing v BtnAddNode_Click fungoval se stejným formátem
             tbNewX.Text = pos.X.ToString(CultureInfo.InvariantCulture);
             tbNewY.Text = pos.Y.ToString(CultureInfo.InvariantCulture);
-            // (Volitelně) přesun focusu do klíče uzlu, aby uživatel mohl ihned zadat jméno
             tbNewKey.Focus();
 
-            // Najdi nejbližší hranu k bodu kliknutí (prahová vzdálenost)
             double bestDist = double.MaxValue;
             (string, string)? bestEdge = null;
 
@@ -376,32 +345,26 @@ namespace DopravniSit
                 }
             }
 
-            // Pokud je nejbližší hrana dost blízko (např. do 8 px), označíme ji
             const double threshold = 8.0;
             if (bestEdge.HasValue && bestDist <= threshold)
             {
-                // přepnutí výběru: pokud klikneme na již vybranou hranu -> zrušíme výběr
                 if (selectedEdge.HasValue && selectedEdge.Value == bestEdge.Value)
                     selectedEdge = null;
                 else
                     selectedEdge = bestEdge;
 
-                // Zaktualizujeme ComboBox (označí vybranou položku) a překreslíme
                 PopulateBlockedEdgesCombo();
                 DrawGraph();
             }
         }
 
-        // Výpočet vzdálenosti bodu od úsečky (v pixelech)
         private static double DistancePointToSegment(Point p, Point a, Point b)
         {
-            // pokud a == b -> vzdálenost k bodu
             double dx = b.X - a.X;
             double dy = b.Y - a.Y;
             if (dx == 0 && dy == 0)
                 return (p - a).Length;
 
-            // projekce bodu p na přímku ab, parametr t v [0,1]
             double t = ((p.X - a.X) * dx + (p.Y - a.Y) * dy) / (dx * dx + dy * dy);
             if (t < 0) t = 0;
             else if (t > 1) t = 1;
@@ -409,8 +372,6 @@ namespace DopravniSit
             var proj = new Point(a.X + t * dx, a.Y + t * dy);
             return (p - proj).Length;
         }
-
-        // --- Uložit / Načíst do textového souboru (volá RoadNetwork) ---
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
@@ -453,7 +414,6 @@ namespace DopravniSit
             }
         }
 
-        // --- Nová metoda: přidání uzlu z GUI ---
         private void BtnAddNode_Click(object sender, RoutedEventArgs e)
         {
             string key = tbNewKey.Text?.Trim();
@@ -481,13 +441,11 @@ namespace DopravniSit
             PopulateBlockedEdgesCombo();
             DrawGraph();
 
-            // Vyčistit pole
             tbNewKey.Text = "";
             tbNewX.Text = "";
             tbNewY.Text = "";
         }
 
-        // --- Nová metoda: přidání hrany z GUI ---
         private void BtnAddEdge_Click(object sender, RoutedEventArgs e)
         {
             if (cbEdgeSource.SelectedItem == null || cbEdgeTarget.SelectedItem == null)
@@ -518,7 +476,6 @@ namespace DopravniSit
                 return;
             }
 
-            // Přidání hrany do sítě (RoadNetwork implementuje neorientovaný přístup)
             try
             {
                 network.AddEdge(source, target, edgeName, weight);
@@ -529,19 +486,16 @@ namespace DopravniSit
                 return;
             }
 
-            // Aktualizovat GUI
             PopulateCombos();
             PopulateBlockedEdgesCombo();
             DrawGraph();
 
-            // Vyčistit vstupy
             tbEdgeName.Text = "";
             tbEdgeWeight.Text = "";
             cbEdgeSource.SelectedItem = null;
             cbEdgeTarget.SelectedItem = null;
         }
 
-        // --- Nové: vyhledávání uzlu ---
         private void BtnSearchNode_Click(object sender, RoutedEventArgs e)
         {
             string key = tbSearchNode.Text?.Trim();
@@ -558,12 +512,10 @@ namespace DopravniSit
                 return;
             }
 
-            // Vybereme v comboboxech a zvýrazníme na mapě
             if (cbStart.ItemsSource != null && cbStart.Items.Contains(key)) cbStart.SelectedItem = key;
             DrawGraph(null, key, null);
         }
 
-        // --- Nové: vyhledávání hrany ---
         private void BtnSearchEdge_Click(object sender, RoutedEventArgs e)
         {
             string query = tbSearchEdge.Text?.Trim();
@@ -573,7 +525,6 @@ namespace DopravniSit
                 return;
             }
 
-            // Pokud je zadáno ve formátu "s-t", zkusíme přímo podle konců
             if (query.Contains("-"))
             {
                 var parts = query.Split('-').Select(p => p.Trim()).ToArray();
@@ -591,7 +542,6 @@ namespace DopravniSit
                 }
             }
 
-            // Jinak hledáme podle názvu hrany (edge.Data)
             foreach (var n in network.GetAllNodes())
             {
                 foreach (var edge in n.Edges)
@@ -599,7 +549,6 @@ namespace DopravniSit
                     if (edge.Data != null && edge.Data.ToString().Equals(query, System.StringComparison.InvariantCultureIgnoreCase))
                     {
                         DrawGraph(null, null, (n.Key, edge.TargetKey));
-                        MessageBox.Show($"Hrana '{query}' nalezena mezi {n.Key} - {edge.TargetKey}. Hodnota je: {edge.Weight.ToString()}", "Výsledek vyhledávání", MessageBoxButton.OK, MessageBoxImage.Information);
                         return;
                     }
                 }
@@ -608,7 +557,6 @@ namespace DopravniSit
             MessageBox.Show("Hrana nenalezena.", "Výsledek vyhledávání", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        // --- Nové: načíst vybranou hranu do polí pro editaci ---
         private void BtnLoadSelectedEdge_Click(object sender, RoutedEventArgs e)
         {
             (string, string)? pair = null;
@@ -639,7 +587,6 @@ namespace DopravniSit
                 return;
             }
 
-            // Naplnit editovací políčka
             tbEditSource.Text = s;
             tbEditTarget.Text = t;
             tbEditEdgeName.Text = edge.Data?.ToString() ?? "";
@@ -647,7 +594,6 @@ namespace DopravniSit
             tbEditEdgeName.Focus();
         }
 
-        // --- Nové: aplikovat úpravy na hranu ---
         private void BtnEditEdge_Click(object sender, RoutedEventArgs e)
         {
             string s = tbEditSource.Text?.Trim();
@@ -680,7 +626,6 @@ namespace DopravniSit
                 return;
             }
 
-            // Najdeme a upravíme obě orientace hrany
             var e1 = sNode.Edges.FirstOrDefault(ed => ed.TargetKey.Equals(t));
             var e2 = tNode.Edges.FirstOrDefault(ed => ed.TargetKey.Equals(s));
 
@@ -695,7 +640,6 @@ namespace DopravniSit
             e2.Data = newName;
             e2.Weight = newWeight;
 
-            // Aktualizovat GUI a vyčistit editovací pole
             PopulateCombos();
             PopulateBlockedEdgesCombo();
             DrawGraph();

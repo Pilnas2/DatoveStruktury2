@@ -11,6 +11,9 @@
       "RelativeMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\marti\\AppData\\Local\\Temp\\.vsdbgsrc\\aad6be2495d0a786b94b3514a5b6903407fe2d6a75ad7e505df6a9d895927867\\XamlReader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|c:\\skola\\ing\\2.semestr\\nndsa\\sema\\dopravnisit\\abstrgraph.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|solutionrelative:abstrgraph.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -60,14 +63,14 @@
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
               "ToolTip": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\MainWindow.xaml.cs",
               "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAAFwCAAAAAAAAAAAAwFkCAACGAAAAAAAAAA==",
+              "ViewState": "AgIAAEwCAAAAAAAAAAAEwFkCAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-16T13:55:48.053Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "CityNode.cs",
               "DocumentMoniker": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\CityNode.cs",
               "RelativeDocumentMoniker": "CityNode.cs",
@@ -83,8 +86,8 @@
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\MainWindow.xaml",
               "RelativeDocumentMoniker": "MainWindow.xaml",
-              "ToolTip": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\MainWindow.xaml*",
-              "RelativeToolTip": "MainWindow.xaml*",
+              "ToolTip": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\MainWindow.xaml",
+              "RelativeToolTip": "MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-02-16T13:55:48.255Z",
               "EditorCaption": ""
@@ -92,6 +95,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "XamlReader.cs",
+              "DocumentMoniker": "C:\\Users\\marti\\AppData\\Local\\Temp\\.vsdbgsrc\\aad6be2495d0a786b94b3514a5b6903407fe2d6a75ad7e505df6a9d895927867\\XamlReader.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\..\\Users\\marti\\AppData\\Local\\Temp\\.vsdbgsrc\\aad6be2495d0a786b94b3514a5b6903407fe2d6a75ad7e505df6a9d895927867\\XamlReader.cs",
+              "ToolTip": "C:\\Users\\marti\\AppData\\Local\\Temp\\.vsdbgsrc\\aad6be2495d0a786b94b3514a5b6903407fe2d6a75ad7e505df6a9d895927867\\XamlReader.cs [Jen pro \u010Dten\u00ED]",
+              "RelativeToolTip": "..\\..\\..\\..\\..\\..\\Users\\marti\\AppData\\Local\\Temp\\.vsdbgsrc\\aad6be2495d0a786b94b3514a5b6903407fe2d6a75ad7e505df6a9d895927867\\XamlReader.cs [Jen pro \u010Dten\u00ED]",
+              "ViewState": "AgIAAKcBAAAAAAAAAAAnwLUBAAACAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-23T12:00:57.213Z",
+              "EditorCaption": " [Jen pro \u010Dten\u00ED]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "AbstrGraph.cs",
               "DocumentMoniker": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\AbstrGraph.cs",
               "RelativeDocumentMoniker": "AbstrGraph.cs",
@@ -99,8 +115,7 @@
               "RelativeToolTip": "AbstrGraph.cs",
               "ViewState": "AgIAAIMAAAAAAAAAAAAjwHMAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-16T14:07:55.892Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-16T14:07:55.892Z"
             }
           ]
         },
