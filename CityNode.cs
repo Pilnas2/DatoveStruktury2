@@ -132,6 +132,7 @@ namespace DopravniSit
 
             return rn;
         }
+
         public List<List<string>> GetAlternativePaths(string start, string end, HashSet<(string, string)> blockedEdges, out List<double> lengths)
         {
             lengths = new List<double>();
@@ -140,12 +141,12 @@ namespace DopravniSit
                 return results;
 
             // Pomocná funkce: sestaví cestu z mapy předchůdců
-            List<string> BuildPath(Dictionary<string, string> prev)
+            List<string> BuildPath(Dictionary<string, string> prev, Dictionary<string, double> dists)
             {
-                if (prev == null) return null;
+                if (prev == null && (dists == null || !dists.ContainsKey(end))) return null;
                 var path = new List<string>();
                 string curr = end;
-                if (!curr.Equals(start) && !prev.ContainsKey(curr)) return null;
+                if (!curr.Equals(start) && (prev == null || !prev.ContainsKey(curr))) return null;
                 while (true)
                 {
                     path.Add(curr);
@@ -161,9 +162,14 @@ namespace DopravniSit
 
             var baseBlocked = blockedEdges != null ? new HashSet<(string, string)>(blockedEdges) : new HashSet<(string, string)>();
 
+            // základní nejkratší trasa
             var prev0 = Dijkstra(start, end, baseBlocked, out var dist0);
-            var first = BuildPath(prev0);
+            var first = BuildPath(prev0, dist0);
             if (first == null) return results;
+
+            // přidáme základní cestu do výsledků
+            results.Add(first);
+            lengths.Add(dist0 != null && dist0.ContainsKey(end) ? dist0[end] : double.PositiveInfinity);
 
             var seen = new HashSet<string> { PathKey(first) };
 
@@ -186,7 +192,7 @@ namespace DopravniSit
                     };
 
                     var prev = Dijkstra(start, end, localBlocked, out var dists);
-                    var alt = BuildPath(prev);
+                    var alt = BuildPath(prev, dists);
                     if (alt == null) continue;
 
                     var key = PathKey(alt);
@@ -196,7 +202,17 @@ namespace DopravniSit
                     results.Add(alt);
                     lengths.Add(dists != null && dists.ContainsKey(end) ? dists[end] : double.PositiveInfinity);
                     q.Enqueue(alt);
+
+
                 }
+                var pairs = new List<(List<string> path, double len)>();
+                for (int j = 0; j < results.Count; j++)
+                {
+                    pairs.Add((results[j], lengths[j]));
+                }
+                pairs.Sort((x, y) => x.len.CompareTo(y.len));
+                results = pairs.Select(x => x.path).ToList();
+                lengths = pairs.Select(x => x.len).ToList();
             }
 
             return results;

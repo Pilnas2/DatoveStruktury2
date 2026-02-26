@@ -3,20 +3,20 @@
   "WorkspaceRootPath": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|c:\\skola\\ing\\2.semestr\\nndsa\\sema\\dopravnisit\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|c:\\skola\\ing\\2.semestr\\nndsa\\sema\\dopravnisit\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|c:\\skola\\ing\\2.semestr\\nndsa\\sema\\dopravnisit\\citynode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|solutionrelative:citynode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|c:\\skola\\ing\\2.semestr\\nndsa\\sema\\dopravnisit\\abstrgraph.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|solutionrelative:abstrgraph.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|c:\\skola\\ing\\2.semestr\\nndsa\\sema\\dopravnisit\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|c:\\skola\\ing\\2.semestr\\nndsa\\sema\\dopravnisit\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{10096999-EA7D-4909-B157-31E37CB8E3C6}|DopravniSit.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 7,
           "Children": [
             {
               "$type": "Bookmark",
@@ -54,33 +54,33 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
               "ToolTip": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\MainWindow.xaml.cs",
               "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAABwAAAAAAAAAAAAvwCIAAABMAAAAAAAAAA==",
+              "ViewState": "AgIAAN8CAAAAAAAAAAAAADUAAABYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-16T13:55:48.053Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "CityNode.cs",
               "DocumentMoniker": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\CityNode.cs",
               "RelativeDocumentMoniker": "CityNode.cs",
               "ToolTip": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\CityNode.cs",
               "RelativeToolTip": "CityNode.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAgAAAAuAAAAAAAAAA==",
+              "ViewState": "AgIAALwAAAAAAAAAAAAAwNYAAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-16T14:39:29Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\MainWindow.xaml",
               "RelativeDocumentMoniker": "MainWindow.xaml",
@@ -92,7 +92,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "AbstrGraph.cs",
               "DocumentMoniker": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\AbstrGraph.cs",
               "RelativeDocumentMoniker": "AbstrGraph.cs",
