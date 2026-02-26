@@ -1,4 +1,4 @@
-﻿using System.Windows; // Pro Point
+﻿using System.Windows;
 using System.IO;
 using System.Globalization;
 using System.Linq;
@@ -6,13 +6,11 @@ using System.Collections.Generic;
 
 namespace DopravniSit
 {
-    // Konkrétní třída uzlu pro silniční síť
     public class CityNode : Node<string, Point, string, double>
     {
         public CityNode(string id, Point pos) : base(id, pos) { }
     }
 
-    // Konkrétní implementace AbstrGraph
     public class RoadNetwork : AbstrGraph<string, Point, string, double>
     {
         protected override double Zero => 0.0;
@@ -20,7 +18,6 @@ namespace DopravniSit
 
         protected override double AddWeights(double a, double b) => a + b;
 
-        // Překrytí pro správné typování seznamu hran
         public new void AddNode(string key, Point data)
         {
             NodesBST.Insert(key, new CityNode(key, data));
@@ -41,8 +38,6 @@ namespace DopravniSit
         public new CityNode GetNode(string key) => NodesBST.Find(key) as CityNode;
         public new List<CityNode> GetAllNodes() => NodesBST.InOrderTraversal().Cast<CityNode>().ToList();
 
-        // Jednoduché textové ukládání:
-        // Formát: sekce #NODES, #EDGES, #BLOCKED; oddělovač ';'
         public void SaveToTextFile(string path, HashSet<(string, string)> blockedEdges)
         {
             var lines = new List<string>();
@@ -164,19 +159,14 @@ namespace DopravniSit
 
             string PathKey(List<string> p) => string.Join(">", p);
 
-            // Kopie původních blokovaných hran (abychom je neměnili)
             var baseBlocked = blockedEdges != null ? new HashSet<(string, string)>(blockedEdges) : new HashSet<(string, string)>();
 
-            // 1) Primární nejkratší cesta
             var prev0 = Dijkstra(start, end, baseBlocked, out var dist0);
             var first = BuildPath(prev0);
             if (first == null) return results;
 
-            results.Add(first);
-            lengths.Add(dist0 != null && dist0.ContainsKey(end) ? dist0[end] : double.PositiveInfinity);
             var seen = new HashSet<string> { PathKey(first) };
 
-            // Fronta pro rozvíjení nalezených cest (breadth-first)
             var q = new Queue<List<string>>();
             q.Enqueue(first);
 
@@ -184,13 +174,11 @@ namespace DopravniSit
             {
                 var current = q.Dequeue();
 
-                // Pro každou hranu v current: zkusíme ji dočasně zablokovat a najít novou cestu
                 for (int i = 0; i < current.Count - 1; i++)
                 {
                     var a = current[i];
                     var b = current[i + 1];
 
-                    // Lokální blokování = původní bloky + právě zablokovaná hrana obousměrně
                     var localBlocked = new HashSet<(string, string)>(baseBlocked)
                     {
                         (a, b),
