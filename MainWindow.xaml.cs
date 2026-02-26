@@ -68,7 +68,6 @@ namespace DopravniSit
             cbStart.ItemsSource = nodes;
             cbEnd.ItemsSource = nodes;
 
-            // Nově: naplnit ComboBoxy pro přidávání hran
             if (cbEdgeSource != null) cbEdgeSource.ItemsSource = nodes;
             if (cbEdgeTarget != null) cbEdgeTarget.ItemsSource = nodes;
         }
@@ -114,7 +113,6 @@ namespace DopravniSit
             graphCanvas.Children.Clear();
             var nodes = network.GetAllNodes();
 
-            // připravit mapu hran -> index cesty (pokud multiPaths != null)
             Dictionary<(string, string), int> edgeToPathIndex = new();
             if (multiPaths != null)
             {
@@ -125,7 +123,6 @@ namespace DopravniSit
                     {
                         var a = p[i];
                         var b = p[i + 1];
-                        // normalizovat pořadí, protože vykreslování probíhá jen pro string.Compare(node.Key, edge.TargetKey) < 0
                         var key = string.Compare(a, b) < 0 ? (a, b) : (b, a);
                         if (!edgeToPathIndex.ContainsKey(key))
                             edgeToPathIndex[key] = pi;
@@ -135,7 +132,6 @@ namespace DopravniSit
 
             Brush[] altBrushes = new Brush[] { Brushes.Blue, Brushes.Green, Brushes.Purple, Brushes.Orange, Brushes.Brown };
 
-            // 1. Vykreslit hrany
             foreach (var node in nodes)
             {
                 foreach (var edge in node.Edges)
@@ -199,7 +195,6 @@ namespace DopravniSit
                         }
                         else
                         {
-                            // multiPaths přednost před běžným isPath
                             var normKey = string.Compare(node.Key, edge.TargetKey) < 0 ? (node.Key, edge.TargetKey) : (edge.TargetKey, node.Key);
                             if (edgeToPathIndex.TryGetValue(normKey, out int pathIndex))
                             {
@@ -231,7 +226,6 @@ namespace DopravniSit
                         };
                         graphCanvas.Children.Add(line);
 
-                        // Label váhy
                         TextBlock txt = new TextBlock { Text = edge.Weight.ToString(), Foreground = Brushes.Black, FontSize = 10, Background = Brushes.White };
                         Canvas.SetLeft(txt, (node.Data.X + targetNode.Data.X) / 2);
                         Canvas.SetTop(txt, (node.Data.Y + targetNode.Data.Y) / 2);
@@ -686,16 +680,13 @@ namespace DopravniSit
 
         private void BtnAlternatives_Click(object sender, RoutedEventArgs e)
         {
-            // Načíst cesta ze vstupu
             if (cbStart.SelectedItem == null || cbEnd.SelectedItem == null) return;
             string start = cbStart.SelectedItem.ToString();
             string end = cbEnd.SelectedItem.ToString();
 
-            // Najít alternativy pomocí GetAlternativePaths
             List<double> lengths;
             var paths = network.GetAlternativePaths(start, end, blockedEdges, out lengths);
 
-            // Zobrazit výsledky — každá položka: [cesta..........................][váha]
             lbAlternatives.Items.Clear();
             for (int i = 0; i < paths.Count; i++)
             {
@@ -744,7 +735,6 @@ namespace DopravniSit
                 foreach (var node in nodes)
                     path.Add(node.Trim());
 
-                // Zvýraznit cestu na grafu
                 DrawGraph(path);
             }
         }

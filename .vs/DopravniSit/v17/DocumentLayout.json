@@ -58,9 +58,9 @@
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
-              "ToolTip": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\MainWindow.xaml.cs",
-              "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAALcCAAAAAAAAAAAuwL8CAABRAAAAAAAAAA==",
+              "ToolTip": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\MainWindow.xaml.cs*",
+              "RelativeToolTip": "MainWindow.xaml.cs*",
+              "ViewState": "AgIAALoCAAAAAAAAAAAuwOECAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-16T13:55:48.053Z",
               "EditorCaption": ""
@@ -75,8 +75,7 @@
               "RelativeToolTip": "CityNode.cs",
               "ViewState": "AgIAAKMAAAAAAAAAAAD4v7YAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-16T14:39:29Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-16T14:39:29Z"
             },
             {
               "$type": "Document",
@@ -87,8 +86,7 @@
               "ToolTip": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\MainWindow.xaml",
               "RelativeToolTip": "MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-02-16T13:55:48.255Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-16T13:55:48.255Z"
             },
             {
               "$type": "Document",
@@ -100,8 +98,7 @@
               "RelativeToolTip": "AbstrGraph.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-16T14:07:55.892Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-16T14:07:55.892Z"
             }
           ]
         },
