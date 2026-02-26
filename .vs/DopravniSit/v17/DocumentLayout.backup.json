@@ -60,7 +60,7 @@
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
               "ToolTip": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\MainWindow.xaml.cs*",
               "RelativeToolTip": "MainWindow.xaml.cs*",
-              "ViewState": "AgIAALoCAAAAAAAAAAAuwOECAAAgAAAAAAAAAA==",
+              "ViewState": "AgIAABwAAAAAAAAAAAAvwCIAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-16T13:55:48.053Z",
               "EditorCaption": ""
@@ -73,9 +73,10 @@
               "RelativeDocumentMoniker": "CityNode.cs",
               "ToolTip": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\CityNode.cs",
               "RelativeToolTip": "CityNode.cs",
-              "ViewState": "AgIAAKMAAAAAAAAAAAD4v7YAAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAgAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-16T14:39:29Z"
+              "WhenOpened": "2026-02-16T14:39:29Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -86,7 +87,8 @@
               "ToolTip": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\MainWindow.xaml",
               "RelativeToolTip": "MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-02-16T13:55:48.255Z"
+              "WhenOpened": "2026-02-16T13:55:48.255Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -96,9 +98,10 @@
               "RelativeDocumentMoniker": "AbstrGraph.cs",
               "ToolTip": "C:\\Skola\\Ing\\2.Semestr\\NNDSA\\SemA\\DopravniSit\\AbstrGraph.cs",
               "RelativeToolTip": "AbstrGraph.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAnAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHEAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-16T14:07:55.892Z"
+              "WhenOpened": "2026-02-16T14:07:55.892Z",
+              "EditorCaption": ""
             }
           ]
         },

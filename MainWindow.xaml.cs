@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace DopravniSit
 {
@@ -28,38 +29,32 @@ namespace DopravniSit
 
         private void InitializeGraphData()
         {
-            network.AddNode("z", new Point(50, 50));
-            network.AddNode("k", new Point(100, 80));
-            network.AddNode("s", new Point(250, 80));
-            network.AddNode("a", new Point(150, 180));
-            network.AddNode("x", new Point(250, 220));
-            network.AddNode("i", new Point(350, 150));
-            network.AddNode("m", new Point(450, 250));
-            network.AddNode("g", new Point(400, 300));
-            network.AddNode("u", new Point(100, 350));
-            network.AddNode("t", new Point(450, 500));
-            network.AddNode("n", new Point(350, 480));
-            network.AddNode("p", new Point(250, 450));
-            network.AddNode("w", new Point(200, 500));
-            network.AddNode("r", new Point(300, 400));
-            network.AddNode("f", new Point(400, 420));
+            var candidates = new[]
+            {
+                Path.Combine(Environment.CurrentDirectory, "inputGraph.txt")
+            };
 
-            network.AddEdge("z", "k", "E1", 5);
-            network.AddEdge("k", "s", "E2", 10);
-            network.AddEdge("k", "a", "E3", 8);
-            network.AddEdge("s", "i", "E4", 6);
-            network.AddEdge("s", "a", "E5", 12);
-            network.AddEdge("a", "x", "E6", 4);
-            network.AddEdge("i", "x", "E7", 7);
-            network.AddEdge("x", "m", "E8", 9);
-            network.AddEdge("x", "g", "E9", 5);
-            network.AddEdge("x", "u", "E10", 11);
-            network.AddEdge("u", "g", "E11", 15);
-            network.AddEdge("m", "g", "E12", 3);
-            network.AddEdge("g", "t", "E13", 10);
-            network.AddEdge("t", "n", "E14", 4);
-            network.AddEdge("n", "p", "E15", 6);
-            network.AddEdge("p", "w", "E16", 5);
+            foreach (var path in candidates)
+            {
+                try
+                {
+                    if (File.Exists(path))
+                    {
+                        var loaded = RoadNetwork.LoadFromTextFile(path, out var loadedBlocked);
+                        if (loaded != null)
+                        {
+                            network = loaded;
+                            blockedEdges = loadedBlocked ?? new HashSet<(string, string)>();
+                            return;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Chyba při načítání souboru '{path}': {ex.Message}");
+                    break;
+                }
+            }
         }
 
         private void PopulateCombos()

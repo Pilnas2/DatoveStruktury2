@@ -1,7 +1,7 @@
 ﻿<Window x:Class="DopravniSit.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Semestrální práce A - NNDSA" Height="900" Width="900">
+        Title="Semestrální práce A - NNDSA" Height="900" Width="1200">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
